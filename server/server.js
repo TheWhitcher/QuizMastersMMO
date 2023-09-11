@@ -31,4 +31,8 @@ io.on('connection', (socket) => {
     socket.on('reach10', data => {
         console.log('data: ', data);
     })
+
+    socket.on('room-created', data => {
+        console.log('room code: ', data);
+    })
 })

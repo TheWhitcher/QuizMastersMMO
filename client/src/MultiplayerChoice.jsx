@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { SocketConext } from './data/socketContent'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 function MultiplayerChoice() {
 
@@ -14,14 +14,19 @@ function MultiplayerChoice() {
             socket.emit('reach10', {count: 20})
         }
         else{
-            navigate('/multiplayer')
+            navigate('./multiplayer')
             console.log("No socket found")
         }
     },[])
 
+    function navigateCreate(){
+        navigate('../create-room')
+    }
+
     return (
         <div>
-            <button>Host</button>
+        <h1>QUIZ MASTERS MMO!!!!!!!!!</h1>
+            <button onClick={navigateCreate}>Host</button>
             <button>Join</button>
         </div>
     )
