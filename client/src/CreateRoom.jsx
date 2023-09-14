@@ -12,8 +12,13 @@ function CreateRoom() {
     },[]);
 
     function roomCreation(){
-        socket.emit('room-created', {code: "adrfvhjiogewrhuioqewgruio"})
-        navigate('../choice')
+        socket.emit('room-created', {
+            genre: "todo",
+            difficulty: "todo",
+            numberOfQuestions: "todo",
+            timerPerQuestion: "todo",
+        })
+        navigate('../host-lobby')
     }
 
     return (

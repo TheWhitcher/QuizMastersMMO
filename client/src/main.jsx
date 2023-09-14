@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Multiplayer from './Multiplayer.jsx'
 import MultiplayerChoice from './MultiplayerChoice.jsx'
 import CreateRoom from './CreateRoom.jsx'
+import HostLobby from './HostLobby.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path='host' element={<MultiplayerChoice/>}/>
               <Route path='join' element={<MultiplayerChoice/>}/>
             <Route path='create-room' element={<CreateRoom/>}/>
+            <Route path='host-lobby' element={<HostLobby/>}/>
         </Route>
       </Routes>
     </BrowserRouter>,

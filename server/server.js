@@ -33,6 +33,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on('room-created', data => {
-        console.log('room code: ', data);
+        console.log('room info: ', data);
     })
 })
