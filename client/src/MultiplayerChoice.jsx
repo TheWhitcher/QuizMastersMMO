@@ -23,11 +23,15 @@ function MultiplayerChoice() {
         navigate('../create-room')
     }
 
+    function navigateJoin(){
+        navigate('../player-lobby')
+    }
+
     return (
         <div>
         <h1>QUIZ MASTERS MMO!!!!!!!!!</h1>
             <button onClick={navigateCreate}>Host</button>
-            <button>Join</button>
+            <button onClick={navigateCreate}>Join</button>
         </div>
     )
 }
