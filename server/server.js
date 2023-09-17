@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const shortid = require('shortid');
 
 const app = express();
 const server = http.createServer(app);
@@ -32,7 +33,24 @@ io.on('connection', (socket) => {
         console.log('data: ', data);
     })
 
+    // Room created, generating room code and sending back
     socket.on('room-created', data => {
         console.log('room info: ', data);
+
+        // TODO Make api call to get question list.
+        // Create code
+        const roomCode = shortid.generate()
+
+        console.log('Generated roomCode: ', roomCode);
+
+        socket.emit('room-code', roomCode)
+        
+    })
+
+    socket.on('join-room', roomCode => {
+        console.log('Joining room: ', roomCode);
+
+        socket.join(roomCode);
+        socket.emit(roomCode, `Joined room ${roomCode}`)
     })
 })
