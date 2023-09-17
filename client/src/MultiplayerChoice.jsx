@@ -31,7 +31,7 @@ function MultiplayerChoice() {
         <div>
         <h1>QUIZ MASTERS MMO!!!!!!!!!</h1>
             <button onClick={navigateCreate}>Host</button>
-            <button onClick={navigateCreate}>Join</button>
+            <button onClick={navigateJoin}>Join</button>
         </div>
     )
 }

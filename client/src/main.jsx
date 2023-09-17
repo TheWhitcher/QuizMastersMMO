@@ -20,7 +20,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='create-room' element={<CreateRoom/>}/>
             <Route path='host-lobby' element={<HostLobby/>}/>
             <Route path='player-lobby' element={<PlayerLobby/>}/>
-            
         </Route>
       </Routes>
     </BrowserRouter>,
