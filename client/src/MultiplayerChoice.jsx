@@ -8,10 +8,10 @@ function MultiplayerChoice() {
     const socket = useContext(SocketConext)
     const navigate = useNavigate();
 
+    //On Load
     useEffect(() => {
-        //On Load
         if(socket){
-            socket.emit('reach10', {count: 20})
+            socket.emit('connected', "Success")
         }
         else{
             navigate('./multiplayer')
@@ -29,9 +29,16 @@ function MultiplayerChoice() {
 
     return (
         <div>
-        <h1>QUIZ MASTERS MMO!!!!!!!!!</h1>
-            <button onClick={navigateCreate}>Host</button>
-            <button onClick={navigateJoin}>Join</button>
+            <div className='contianer'>
+                <div className='row'>
+                    <h1>QUIZ MASTERS MMO!!!!!!!!!</h1>
+                </div>
+
+                <div className='row'>
+                    <button onClick={navigateCreate} style={{marginInlineEnd: '20px'}}>Host</button>
+                    <button onClick={navigateJoin}>Join</button>
+                </div>
+            </div>
         </div>
     )
 }
