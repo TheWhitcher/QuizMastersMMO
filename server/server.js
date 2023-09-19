@@ -20,7 +20,7 @@ server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
 
-let code;
+let roomSettings = [];
 let playerList = [];
 let playerIndex = 0;
 
@@ -35,40 +35,57 @@ io.on('connection', (socket) => {
     socket.on('room-created', (data) => {
         console.log('Room Created! Room info: ', data);
 
-        code = shortid.generate()
-        socket.emit('room-code', code)
+        const settings = {
+            code: shortid.generate(),
+            category: data.category,
+            difficulty: data.difficulty,
+            numberOfQuestions: data.numberOfQuestions,
+            timePerQuestion: data.timePerQuestion
+        }
+        
+        roomSettings.push(settings)
+        socket.emit('room-code', settings.code)
     });
 
     socket.on('join-room', (data) => {
         console.log('Joining room: ', data);
 
-        if (code === data.code){
-
-            socket.join(data.code);
-            io.to(data.code).emit('room-joined', `Joined room ${data.code}`)
-            
-            if (!data.isHost){
-                console.log('player joined')
-                playerIndex++
-                const player = { name: data.name, index: playerIndex};
-                playerList.push(player)
-                io.to(data.code).emit('update-players', playerList)
+        for (const settings of roomSettings) {
+            if (settings.code === data.code) {
+                socket.join(data.code);
+                io.to(data.code).emit('room-joined', `Joined room ${data.code}`)
+                
+                if (!data.isHost){
+                    console.log('player joined')
+                    playerIndex++
+                    const player = { name: data.name, index: playerIndex};
+                    playerList.push(player)
+                    io.to(data.code).emit('update-players', playerList)
+                }
+                return;
             }
-        }
-        else{
-            console.log('failed to join')
-            io.to(data.code).emit('room-joined', 'Failed to join room')
-        }
+        }  
 
+        console.log('failed to join')
+        io.to(data.code).emit('room-joined', 'Failed to join room')
       });
 
     socket.on('close-room', (code) => {
         console.log(`room ${code} closing...`)
-        io.to(code).emit('room-closed', "Room closed by Host")
-        console.log(socket.rooms[code])
-        playerList = [];
-        delete socket.rooms[code]
+
+        io.to(code).emit('room-closed', {
+            message: "Room closed by Host",
+            code: code
+        })
+        playerList = []
+        socket.leave(code)
+
+        console.log(`Room ${code} closed.`);
     });
+
+    socket.on('leave-room', (code) => {
+        socket.leave(code)
+    })
 
     socket.on('start-quiz', (code) => {
         console.log(`room ${code} starting...`)

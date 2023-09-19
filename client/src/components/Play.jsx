@@ -18,7 +18,7 @@ function Play() {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState();
 
-    const numberOfQuestions = 10;
+    const numberOfQuestions = 10; 
 
     useEffect(() => {
         setSelectedCategory({name: categoryInfo[0].name, id: categoryInfo[1].id})

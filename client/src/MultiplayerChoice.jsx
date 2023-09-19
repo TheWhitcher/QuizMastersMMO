@@ -31,7 +31,8 @@ function MultiplayerChoice() {
         <div>
             <div className='contianer'>
                 <div className='row'>
-                    <h1>QUIZ MASTERS MMO!!!!!!!!!</h1>
+                    <h1 style={{margin: '0px'}}>Join The Room Game!<br/>WOOOOOOOOOAAAAAHHHHH</h1>
+                    <h5>Made By: Christophe Landry & Zacharyah Whitcher</h5>
                 </div>
 
                 <div className='row'>

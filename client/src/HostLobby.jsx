@@ -12,46 +12,48 @@ function HostLobby() {
   const [isReady, setIsReady] = useState(true);
   const [readyMessage, setReadyMessage] = useState("Waiting for players to join...");
 
-  // On load
   useEffect(() => {
-      if(socket){
-        socket.emit('connected', "Success")
-        socket.emit('join-room', {code: code, isHost: true})
-      }
-      else{
+      if(!socket){
         navigate('./multiplayer')
         console.log("No socket found")
+        return;
+      }
+
+      socket.emit('connected', "Success")
+      socket.emit('join-room', {code: code, isHost: true})
+
+      socket.on('room-joined',(data) => {
+        console.log(data);
+      })
+  
+      socket.on('quiz-start', () => {
+        navigate(`../host-quiz/${code}`)
+      })
+  
+      socket.on('room-closed', (data) => {
+        alert(data.message)
+        navigate("../choice")
+      })
+  
+      socket.on('update-players', (data) => {
+        setPlayerList(data)
+        console.log(data)
+  
+        if(data.length > 0){
+          setIsReady(false)
+          setReadyMessage("Click 'Start game' to begin the quiz!")
+        }
+        else{
+          setIsReady(true)
+          setReadyMessage("Waiting for players to join...")
+        }
+      })
+
+      return () => {
+        socket.off('room-closed')
+        console.log("Dismounted");
       }
   },[]);
-
-  useEffect(() => {
-    socket.on('room-joined',(data) => {
-      console.log(data);
-    })
-
-    socket.on('quiz-start', (data) => {
-      navigate(`../host-quiz/${code}`)
-    })
-
-    socket.on('room-closed', (data) => {
-      alert(data)
-      navigate("../choice")
-    })
-
-    socket.on('update-players', (data) => {
-      setPlayerList(data)
-      console.log(data)
-
-      if(data.length > 0){
-        setIsReady(false)
-        setReadyMessage("Click 'Start game' to begin the quiz!")
-      }
-      else{
-        setIsReady(true)
-        setReadyMessage("Waiting for players to join...")
-      }
-    })
-  }, [socket]);
 
   function startQuiz(){
     socket.emit('start-quiz', code)
@@ -66,7 +68,7 @@ function HostLobby() {
         <h2>Host Lobby</h2>
         <div className='container'>
           <div className='row' style={{ margin: '1px', border: '5px solid white', padding: '5px' }}>
-            <h2 style={{ margin: '0px'}}x><u>CODE</u></h2>
+            <h2 style={{ margin: '0px'}}><u>CODE</u></h2>
             <h1 value={code}>{code}</h1>
           </div>
 
@@ -80,7 +82,7 @@ function HostLobby() {
           <div className='row' style={{ border: '1px solid white', padding: '5px' }}>
             <h3 style={{ margin: '0px'}}><u>PLAYERS</u></h3>
           
-            <div>   
+            <div>
               {playerList.map((player, index) => {
                 return <ScrollableList key={index} value={player.index} name={player.name}/>
               })}

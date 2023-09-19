@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authorizationToken, scoreRoute } from './constants.js';
-import SquareButton from './SquareButton';
+import { authorizationToken } from '../constants';
 
 function Result(props) 
 {
@@ -24,7 +23,7 @@ function Result(props)
 
     if(playerName.length > 0){
       
-      const url = scoreRoute;
+      const url = "";
       
       const options ={      
         method: "POST",
@@ -72,12 +71,10 @@ function Result(props)
             </div>
 
             <div className="col text-start">
-                <SquareButton text="Save score to leaderboard" clickEvent={PostName}/>
             </div>
           </div>
 
           <div className="row mt-4">
-            <SquareButton destination="/Category" text="Replay" />
           </div>
         </div>
       </div>

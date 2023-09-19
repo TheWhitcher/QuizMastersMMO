@@ -28,6 +28,11 @@ function ClientLobby() {
 
     // Create a WebSocket connection
     socket.emit('join-room', playerInfo)
+
+    socket.on('room-closed', (data) => {
+      socket.emit('leave-room', data.code)
+      alert(data.message);
+    })
     
     //Change once sockets works
     inRoom = true;

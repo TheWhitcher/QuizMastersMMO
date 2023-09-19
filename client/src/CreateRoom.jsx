@@ -7,35 +7,31 @@ function CreateRoom() {
     const navigate = useNavigate();
 
     const [quizDifficulty, setDifficulty] = useState('Easy');
-    const [catagory, setCatagory] = useState('Yes');
+    const [category, setCategory] = useState("31");
     const [numberOfQuestions, setNumberOfQuestion] = useState(1);
     const [timerPerQuestion, setTimePerQuestion] = useState(15);
 
-    //On Load
     useEffect(() => {
-        if(socket){
-            socket.emit('connected', "Success")
-        }
-        else{
+        if(!socket){
             navigate('./multiplayer')
             console.log("No socket found")
+            return;
         }
-    },[])
 
-    // On Socket change
-    useEffect(() => {
+        socket.emit('connected', "Success")
+
         socket.on('room-code', roomCode => {            
-            alert("Room created moving to lobby")
             navigate(`../host-lobby/${roomCode}`);
         })
-    }, [socket]);
+    },[])
 
     const handleDifficultyChange = (event) => {
         setDifficulty(event.target.value);
     };
 
-    const handleCatagoryChange = (event) => {
-        setCatagory(event.target.value);
+    const handleCategoryChange = (event) => {
+        console.log(event.target.value)
+        setCategory(event.target.value);
     }
 
     const handleNumberChange = (event) => {
@@ -67,10 +63,10 @@ function CreateRoom() {
 
     function roomCreation(){
         const roomSettings = {
-            catagory: catagory,
+            category: category,
             difficulty: quizDifficulty,
             numberOfQuestions: numberOfQuestions,
-            timerPerQuestion: timerPerQuestion,
+            timePerQuestion: timerPerQuestion,
         }
 
         socket.emit('room-created', roomSettings)
@@ -78,11 +74,11 @@ function CreateRoom() {
 
     return (
         <div>
-            <h1>Create Room</h1>
+            <h1>Quiz Settings</h1>
             <div className="container">
                 <div className='row' style={{ margin: '10px' }}>
-                <label>Catagory: </label>
-                <select defaultValue="31" name="catagory" id="catagory" onChange={handleCatagoryChange}>
+                <label>Category: </label>
+                <select defaultValue={category} name="category" id="category" onChange={handleCategoryChange}>
                     <option id='anime-and-manga' value='31'>Anime & Manga</option>
                     <option id='video-games' value='15'>Video Games</option>
                     <option id='music' value='12'>Music</option>
@@ -106,7 +102,7 @@ function CreateRoom() {
 
                 <div className="row" style={{ margin: '10px' }}>
                     <label>Number of Questions: </label>
-                    <input type="number" id="quizSize" defaultValue={1} min={1} max={99} onChange={handleNumberChange}></input>
+                    <input type="number" id="quizSize" defaultValue={1} min={1} max={50} onChange={handleNumberChange}></input>
                 </div>
 
                 <div className="row" style={{ margin: '10px' }}>
