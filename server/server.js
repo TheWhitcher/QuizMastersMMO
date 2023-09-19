@@ -14,43 +14,64 @@ const io = socketIo(server, {
 
 app.use(cors());
 
-// Set up your other Express middleware and routes here
-app.get('/', (req, res) => {
-    io.emit('message', 'Hello World!');
-    res.send("Ok!");
-})
-
 // Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
 
+let code;
+let playerList = [];
+let playerIndex = 0;
+
 io.on('connection', (socket) => {
-    console.log('socket: ', socket.id);
+    socket.on('connected', (data) => {
+        console.log('Connection: ', data);
+        console.log('socket: ', socket.id);
 
-    socket.on('reach10', data => {
-        console.log('data: ', data);
-    })
+    });
 
-    // Room created, generating room code and sending back
-    socket.on('room-created', data => {
-        console.log('room info: ', data);
+    // TODO Make api call to get question list.
+    socket.on('room-created', (data) => {
+        console.log('Room Created! Room info: ', data);
 
-        // TODO Make api call to get question list.
-        // Create code
-        const roomCode = shortid.generate()
+        code = shortid.generate()
+        socket.emit('room-code', code)
+    });
 
-        console.log('Generated roomCode: ', roomCode);
+    socket.on('join-room', (data) => {
+        console.log('Joining room: ', data);
 
-        socket.emit('room-code', roomCode)
-        
-    })
+        if (code === data.code){
 
-    socket.on('join-room', roomCode => {
-        console.log('Joining room: ', roomCode);
+            socket.join(data.code);
+            io.to(data.code).emit('room-joined', `Joined room ${data.code}`)
+            
+            if (!data.isHost){
+                console.log('player joined')
+                playerIndex++
+                const player = { name: data.name, index: playerIndex};
+                playerList.push(player)
+                io.to(data.code).emit('update-players', playerList)
+            }
+        }
+        else{
+            console.log('failed to join')
+            io.to(data.code).emit('room-joined', 'Failed to join room')
+        }
 
-        socket.join(roomCode);
-        socket.emit(roomCode, `Joined room ${roomCode}`)
-    })
-})
+      });
+
+    socket.on('close-room', (code) => {
+        console.log(`room ${code} closing...`)
+        io.to(code).emit('room-closed', "Room closed by Host")
+        console.log(socket.rooms[code])
+        playerList = [];
+        delete socket.rooms[code]
+    });
+
+    socket.on('start-quiz', (code) => {
+        console.log(`room ${code} starting...`)
+        io.to(code).emit('quiz-start', "Quiz started by Host")
+    });
+});

@@ -8,19 +8,21 @@ import MultiplayerChoice from './MultiplayerChoice.jsx'
 import CreateRoom from './CreateRoom.jsx'
 import HostLobby from './HostLobby.jsx'
 import PlayerLobby from './PlayerLobby.jsx'
+import HostQuiz from './HostQuiz.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-      <Routes>
-        <Route index element={<App/>}/>
-        <Route path='multiplayer' element={<Multiplayer/>}>
-            <Route path='choice' element={<MultiplayerChoice/>}/>
-              <Route path='host' element={<MultiplayerChoice/>}/>
-              <Route path='join' element={<MultiplayerChoice/>}/>
-            <Route path='create-room' element={<CreateRoom/>}/>
-            <Route path='host-lobby' element={<HostLobby/>}/>
-            <Route path='player-lobby' element={<PlayerLobby/>}/>
-        </Route>
-      </Routes>
+    <Routes>
+      <Route index element={<App/>}/>
+      <Route path='multiplayer' element={<Multiplayer/>}>
+          <Route path='choice' element={<MultiplayerChoice/>}/>
+            <Route path='host' element={<MultiplayerChoice/>}/>
+            <Route path='join' element={<MultiplayerChoice/>}/>
+          <Route path='create-room' element={<CreateRoom/>}/>
+            <Route path='host-lobby/:code' element={<HostLobby/>}/>
+            <Route path='host-quiz/:code' element={<HostQuiz/>}/>
+          <Route path='player-lobby' element={<PlayerLobby/>}/>
+      </Route>
+    </Routes>
     </BrowserRouter>,
 )
