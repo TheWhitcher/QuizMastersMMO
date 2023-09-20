@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import Question from './components/Question';
 import Spinner from './components/Spinner';
-import Result from './components/Result';
 import { SocketContext } from './data/socketContent';
 import { useNavigate, useParams } from 'react-router-dom';
 import Timer from './components/Timer';

@@ -22,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='host-lobby/:code' element={<HostLobby/>}/>
             <Route path='host-quiz/:code' element={<HostQuiz/>}/>
           <Route path='player-lobby' element={<PlayerLobby/>}/>
+            {/* TODO: create player-quiz/:code path*/}
           <Route path='leaderboard/:code' element={<Leaderboard/>}/>
       </Route>
     </Routes>

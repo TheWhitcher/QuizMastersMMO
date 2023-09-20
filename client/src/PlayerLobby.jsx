@@ -23,7 +23,8 @@ function ClientLobby() {
 
     const playerInfo = {
       code: roomCode,
-      name: playerName
+      name: playerName,
+      score: 0
     }
 
     socket.emit('join-room', playerInfo)

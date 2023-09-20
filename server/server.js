@@ -68,7 +68,11 @@ io.on('connection', (socket) => {
                 if (!data.isHost){
                     console.log('player joined')
                     settings.playerIndex++
-                    const player = { name: data.name, index: settings.playerIndex};
+                    const player = { 
+                        index: settings.playerIndex, 
+                        name: data.name,
+                        score: data.score
+                    };
                     settings.playerList.push(player)
                     io.to(data.code).emit('update-players', playerList)
                 }
@@ -123,7 +127,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('player-answered', (data) => {
-        // TODO:
+        // TODO: Might be redundant we'll see when players quiz gets done
     })
 
     socket.on('start-timer', (data) => {
@@ -133,6 +137,14 @@ io.on('connection', (socket) => {
                 return;
             }
         }
+    })
+
+    socket.on('request-players', (data) => {
+        for (const settings of roomSettings) {
+            if (settings.code === data.code) {
+                io.to(data.code).emit('player-list', settings.playerList)
+            }
+        }  
     })
 });
 
