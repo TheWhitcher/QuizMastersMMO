@@ -30,11 +30,11 @@ function Leaderboard() {
                 setPlayerList(data);
             }));
 
-            // return () => {
-            //     socket.off('room-closed')
-            //     socket.off('player-list')
-            //     console.log("Dismounted");
-            // }
+            return () => {
+                socket.off('room-closed')
+                socket.off('player-list')
+                console.log("Dismounted Leaderboard");
+            }
     }, []);
 
     function goHome(){

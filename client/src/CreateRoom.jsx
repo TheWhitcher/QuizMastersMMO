@@ -24,10 +24,10 @@ function CreateRoom() {
             navigate(`../host-lobby/${roomCode}`);
         })
 
-        // return () => {
-            //     socket.off('room-code')
-            //     console.log("Dismounted");
-            // }
+        return () => {
+            socket.off('room-code')
+            console.log("Dismounted Create Room");
+        }
     }, [])
 
     const handleDifficultyChange = (event) => {

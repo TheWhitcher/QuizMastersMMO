@@ -58,12 +58,15 @@ function PlayerQuiz() {
             socket.on('nav-leaderboard', () => {
                 navigate(`../leaderboard/${code}`)
             })
-            
-            // return () => {
-            //     socket.off('room-closed')
-            //     socket.off('quiz-questions')
-            //     console.log("Dismounted");
-            // }
+
+            return () => {
+                socket.off('quiz-questions')
+                socket.off('next-question')
+                socket.off('room-closed')
+                socket.off('time-up')
+                socket.off('time-nav-leaderboard')
+                console.log("Dismounted Host Lobby");
+            }
     }, []);
 
     function leaveRoom(){

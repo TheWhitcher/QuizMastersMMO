@@ -57,11 +57,13 @@ function HostQuiz() {
                 setIsNotDone(false)
             })
 
-            // return () => {
-            //     socket.off('room-closed')
-            //     socket.off('quiz-questions')
-            //     console.log("Dismounted");
-            // }
+            return () => {
+                socket.off('quiz-questions')
+                socket.off('room-closed')
+                socket.off('update-answered')
+                socket.off('times-up')
+                console.log("Dismounted Host Quiz");
+            }
     }, []);
 
     function nextQuestion() {

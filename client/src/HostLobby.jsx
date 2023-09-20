@@ -21,10 +21,6 @@ function HostLobby() {
 
       socket.emit('connected', "Success")
       socket.emit('join-room', {code: code, isHost: true})
-
-      socket.on('room-joined',(data) => {
-        console.log(data);
-      })
   
       socket.on('quiz-start', () => {
         navigate(`../host-quiz/${code}`)
@@ -49,13 +45,12 @@ function HostLobby() {
         }
       })
 
-      // return () => {
-      //   socket.off('room-joined')
-      //   socket.off('quiz-start')
-      //   socket.off('room-closed')
-      //   socket.off('update-players')
-      //   console.log("Dismounted");
-      // }
+      return () => {
+        socket.off('room-joined')
+        socket.off('quiz-start')
+        socket.off('update-players')
+        console.log("Dismounted Host Lobby");
+      }
   });
 
   function startQuiz(){

@@ -45,6 +45,14 @@ function ClientLobby() {
       setPlayerList(data)
       console.log(data)
     })
+
+    return () => {
+      socket.off('room-closed')
+      socket.off('room-joined')
+      socket.off('quiz-start')
+      socket.off('update-players')
+      console.log("Dismounted Player Lobby");
+    }
   },[])
 
   const handleCodeChange = (event) => {
