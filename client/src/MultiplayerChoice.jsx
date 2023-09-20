@@ -1,11 +1,11 @@
-import React, { useContext, useEffect } from 'react'
-import { SocketConext } from './data/socketContent'
+import { useContext, useEffect } from 'react'
+import { SocketContext } from './data/socketContent'
 import { useNavigate } from 'react-router-dom'
 
 function MultiplayerChoice() {
 
     // Use this on every component that emits/listens to WS events
-    const socket = useContext(SocketConext)
+    const socket = useContext(SocketContext)
     const navigate = useNavigate();
 
     //On Load

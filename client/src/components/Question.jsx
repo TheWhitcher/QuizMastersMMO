@@ -10,8 +10,8 @@ function Question({ question, correct_answer, incorrect_answers, selectAnswerHan
         allAnswers[allAnswers.length - 1].correct = true; // last answer is the right one
 
         return _.shuffle(allAnswers.map((answer, index) => {
-            return <div className="col-6 text-center" key={index}>
-                <button className='btn btn-secondary w-75 m-2 py-4 rounded-pill' onClick={() => selectAnswerHandler(answer)}>{decode(answer.text)}</button>
+            return <div key={index}>
+                <button style={{margin: '5px', borderRadius: '20px', padding: '10px 20px'}} onClick={() => selectAnswerHandler(answer)}>{decode(answer.text)}</button>
             </div>
         }))
     }
@@ -19,7 +19,7 @@ function Question({ question, correct_answer, incorrect_answers, selectAnswerHan
     return (
         <div className='container'>
             <div className="row">
-                <h3 className='p-3 text-center'>{decode(question)}</h3>
+                <h2>{decode(question)}</h2>
                 {answersButtons()}
             </div>
         </div>

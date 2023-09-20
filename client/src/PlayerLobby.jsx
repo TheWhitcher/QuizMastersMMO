@@ -1,11 +1,11 @@
 import React from 'react'
 import { useContext } from 'react'
-import { SocketConext } from './data/socketContent';
+import { SocketContext } from './data/socketContent';
 
 
 function ClientLobby() {
   let inRoom = false;
-  const socket = useContext(SocketConext)
+  const socket = useContext(SocketContext)
 
   function btnClick() {
 
@@ -26,7 +26,6 @@ function ClientLobby() {
       name: playerName
     }
 
-    // Create a WebSocket connection
     socket.emit('join-room', playerInfo)
 
     socket.on('room-closed', (data) => {

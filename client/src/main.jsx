@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
@@ -9,6 +8,7 @@ import CreateRoom from './CreateRoom.jsx'
 import HostLobby from './HostLobby.jsx'
 import PlayerLobby from './PlayerLobby.jsx'
 import HostQuiz from './HostQuiz.jsx'
+import Leaderboard from './Leaderboard.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -22,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='host-lobby/:code' element={<HostLobby/>}/>
             <Route path='host-quiz/:code' element={<HostQuiz/>}/>
           <Route path='player-lobby' element={<PlayerLobby/>}/>
+          <Route path='leaderboard/:code' element={<Leaderboard/>}/>
       </Route>
     </Routes>
     </BrowserRouter>,
