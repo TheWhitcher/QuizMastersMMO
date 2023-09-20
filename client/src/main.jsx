@@ -25,6 +25,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             {/* TODO: create player-quiz/:code path*/}
           <Route path='leaderboard/:code' element={<Leaderboard/>}/>
       </Route>
-    </Routes>
+      </Routes>
     </BrowserRouter>,
 )

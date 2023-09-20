@@ -39,7 +39,7 @@ function Leaderboard() {
 
     function goHome(){
         // TODO: add logic to close the room is host leaves, or leaves room if player leaves
-        navigate('multiplayer')
+        navigate('../choice')
     }
 
   return (
