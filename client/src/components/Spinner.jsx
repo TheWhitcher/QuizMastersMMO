@@ -8,7 +8,7 @@ function Spinner({ light, size }) {
     return (
         <div className="text-center">
             <div className={"spinner-grow m-5 " + (light ? "text-light" : "text-dark")}  style={{ width: size + "rem", height: size + "rem" }} role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">Waiting for next question...</span>
             </div>
         </div>
     )

@@ -9,6 +9,7 @@ import HostLobby from './HostLobby.jsx'
 import PlayerLobby from './PlayerLobby.jsx'
 import HostQuiz from './HostQuiz.jsx'
 import Leaderboard from './Leaderboard.jsx'
+import PlayerQuiz from './PlayerQuiz.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -22,7 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='host-lobby/:code' element={<HostLobby/>}/>
             <Route path='host-quiz/:code' element={<HostQuiz/>}/>
           <Route path='player-lobby' element={<PlayerLobby/>}/>
-            {/* TODO: create player-quiz/:code path*/}
+            <Route path='player-quiz/:code' element={<PlayerQuiz/>}/>
           <Route path='leaderboard/:code' element={<Leaderboard/>}/>
       </Route>
       </Routes>

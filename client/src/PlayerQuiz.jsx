@@ -5,7 +5,7 @@ import { SocketContext } from './data/socketContent';
 import { useNavigate, useParams } from 'react-router-dom';
 import Timer from './components/Timer';
 
-function HostQuiz() {
+function PlayerQuiz() {
     const socket = useContext(SocketContext);
     const navigate = useNavigate();
     const {code} = useParams();
@@ -16,9 +16,7 @@ function HostQuiz() {
     const [selectedCategory, setSelectedCategory] = useState();
     const [numberOfQuestions, setNumberOfQuestion] = useState();
     const [timePerQuestion, setTimePerQuestion] = useState();
-    const [playerCount, setPlayerCount] = useState(0);
-    const [playersAnswered, setPlayersAnswered] = useState(0);
-    const [isNotDone, setIsNotDone] = useState(true)
+    const [isAnswered, setIsAnswered] = useState(false)
 
     useEffect(() => {
         if(!socket){
@@ -36,27 +34,31 @@ function HostQuiz() {
                 setNumberOfQuestion(data.numberOfQuestions)
                 setTimePerQuestion(data.timePerQuestion)
                 setSelectedCategory(data.questions[0].category)
-                setPlayerCount(data.playerCount)  
+                console.log('activeQuestionIndex: ', activeQuestionIndex);
                 
+                console.log(data)
+            })
+
+            socket.on('next-question', () => {
+                // next question
+                setIsLoading(false)
+                setActiveQuestionIndex((value) => value + 1);
+                socket.emit('start-timer', {code: code})
             })
 
             socket.on('room-closed', (data) => {
-                //alert(data.message)
+                //(data.message)
                 navigate("../choice")
             })
 
-            socket.on('update-answered', () => {
-                setPlayersAnswered(playersAnswered + 1)
-                console.log(playersAnswered)
-                if(playersAnswered === playerCount){
-                    setIsNotDone(false)
-                }
-            })
-
             socket.on('time-up', () => {
-                setIsNotDone(false)
+                setIsLoading(true)
             })
 
+            socket.on('nav-leaderboard', () => {
+                navigate(`../leaderboard/${code}`)
+            })
+            
             // return () => {
             //     socket.off('room-closed')
             //     socket.off('quiz-questions')
@@ -64,30 +66,22 @@ function HostQuiz() {
             // }
     }, []);
 
-    function nextQuestion() {
-        setIsLoading(true);
-
-        if (activeQuestionIndex === numberOfQuestions - 1) {
-            // last question
-            socket.emit('quiz-finished', {code: code})
-            navigate(`../leaderboard/${code}`)
-        } else {
-            // next question
-            setActiveQuestionIndex((value) => value + 1);
-            setIsNotDone(true)
-            setPlayersAnswered(0)
-            socket.emit('start-timer', {code: code})
-            socket.emit('start-next-question', {code: code})
-        }
-
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 200)
+    function leaveRoom(){
+        socket.emit('leave-room', code)
     }
 
-    function closeRoom(){
-        socket.emit('close-room', code)
-      }
+    function selectAnswerHandler(answer) {
+        setIsLoading(true);
+        socket.emit('player-answered', {code: code})
+
+        if (answer.correct) {
+            // TODO: increment score
+            //setScore((value) => value + 1); // increment score
+            //alert("Good Answer!");
+        }
+
+        
+    }
 
     return (
         <div className='container' style={{ margin: '10px', padding: '40px' }}>
@@ -103,17 +97,13 @@ function HostQuiz() {
                                 <div className="row">
                                     <div>Question {activeQuestionIndex + 1}/{numberOfQuestions}</div>
                                 </div>
-                                <div className="row">
-                                    <div>Answers {playersAnswered}/{playerCount}</div>
-                                </div>
                                 <div className="row" style={{marginBlock: '10px'}}>
-                                    <button style={{marginInline: '30px'}} onClick={nextQuestion} disabled={isNotDone}>Next</button>
-                                    <button style={{marginInline: '30px'}} onClick={closeRoom}>Close</button>
+                                    <button style={{marginInline: '30px'}} onClick={leaveRoom}>Leave</button>
                                 </div>
                                     
                                 <div className='row' style={{fontSize: '1.5em'}}>Time Left <Timer initialTime={timePerQuestion} /></div>
-                                <div style={{pointerEvents: 'none'}}>
-                                    <Question question={questions[activeQuestionIndex].question} correct_answer={questions[activeQuestionIndex].correct_answer} incorrect_answers={questions[activeQuestionIndex].incorrect_answers}
+                                <div className="row">
+                                    <Question question={questions[activeQuestionIndex].question} correct_answer={questions[activeQuestionIndex].correct_answer} incorrect_answers={questions[activeQuestionIndex].incorrect_answers} selectAnswerHandler={selectAnswerHandler}
                                     ></Question>
                                 </div>
                             </div>
@@ -127,4 +117,4 @@ function HostQuiz() {
     )
 }
 
-export default HostQuiz
+export default PlayerQuiz

@@ -19,6 +19,7 @@ function ClientLobby() {
     if(!socket){
       navigate('./multiplayer')
       console.log("No socket found")
+      return;
     }
 
     socket.emit('connected', "Success")
@@ -26,7 +27,7 @@ function ClientLobby() {
     socket.on('room-closed', (data) => {
       socket.emit('leave-room', data.code)
       setMessage("Enter the code and your name to join a room!");
-      alert(data.message);
+      //alert(data.message);
     });
 
     socket.on('room-joined', (data) => {
@@ -35,19 +36,14 @@ function ClientLobby() {
       setLeaveButton('Leave');
     })
 
+    socket.on('quiz-start', (data) => {
+      //alert(data.message);
+      navigate(`../player-quiz/${data.code}`)
+    });
+
     socket.on('update-players', (data) => {
       setPlayerList(data)
-
       console.log(data)
-
-      // if(data.length > 0){
-      //   setIsNotReady(false)
-      //   setReadyMessage("Click 'Start game' to begin the quiz!")
-      // }
-      // else{
-      //   setIsNotReady(true)
-      //   setReadyMessage("Waiting for players to join...")
-      // }
     })
   },[])
 
@@ -61,7 +57,7 @@ function ClientLobby() {
       console.log('playerName: ', playerName);
       
       if (!roomCode || !playerName) {
-        alert("Please enter both the Room Code and Player Name.");
+        //alert("Please enter both the Room Code and Player Name.");
         return; // Exit the function without creating a WebSocket connection
       }
       
@@ -76,7 +72,7 @@ function ClientLobby() {
     //Handle connection errors
     socket.onerror = function (error) {
       console.error("WebSocket Error: ", error);
-      alert("Failed to connect to the room. Please check the room code and try again.");
+      //alert("Failed to connect to the room. Please check the room code and try again.");
     };
   }
   

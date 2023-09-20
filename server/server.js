@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
         for (const settings of roomSettings) {
             if (settings.code === data.code && !settings.isStarted) {
                 socket.join(data.code);
-                io.to(data.code).emit('room-joined', `Joined room ${data.code}`)
+                io.to(data.code).emit('room-joined', `Joined room ${data.code}. Waiting for host to start the quiz!`)
                 
                 if (!data.isHost){
                     console.log('player joined')
@@ -106,7 +106,10 @@ io.on('connection', (socket) => {
         for (const settings of roomSettings) {
             if (settings.code === code) {
                 settings.isStarted = true
-                io.to(code).emit('quiz-start', "Quiz started by Host")
+                io.to(code).emit('quiz-start', {
+                    message: "Quiz started by Host",
+                    code: code
+                })
             }
             return;
         }
@@ -127,7 +130,12 @@ io.on('connection', (socket) => {
     })
 
     socket.on('player-answered', (data) => {
-        // TODO: Might be redundant we'll see when players quiz gets done
+        for (const settings of roomSettings) {
+            if (settings.code === data.code) {
+                io.to(data.code).emit('update-answered')
+                return;
+            }
+        }  
     })
 
     socket.on('start-timer', (data) => {
@@ -139,10 +147,24 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on('start-next-question', (data) => {
+        io.to(data.code).emit('next-question')
+    })
+
+    socket.on('quiz-finished', (data) => {
+        for (const settings of roomSettings) {
+            if (settings.code === data.code) {
+                io.to(data.code).emit('nav-leaderboard')
+                return;
+            }
+        }
+    })
+
     socket.on('request-players', (data) => {
         for (const settings of roomSettings) {
             if (settings.code === data.code) {
                 io.to(data.code).emit('player-list', settings.playerList)
+                return;
             }
         }  
     })

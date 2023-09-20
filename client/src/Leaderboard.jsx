@@ -21,7 +21,7 @@ function Leaderboard() {
             socket.emit('request-players', {code: code});
 
             socket.on('room-closed', (data) => {
-                alert(data.message)
+                //alert(data.message)
                 navigate("../choice")
             });
 

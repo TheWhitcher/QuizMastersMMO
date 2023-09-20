@@ -31,7 +31,7 @@ function HostLobby() {
       })
   
       socket.on('room-closed', (data) => {
-        alert(data.message)
+        //alert(data.message)
         navigate("../choice")
       })
   
