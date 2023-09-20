@@ -3,7 +3,6 @@ import Question from './Question';
 import Spinner from './Spinner';
 import Result from './Result';
 import { openTDhost } from './constants';
-import SquareButton from './SquareButton';
 
 
 function Play() {
@@ -76,35 +75,33 @@ function Play() {
     return (
         <div className='container rounded p-4 my-2' style={{ backgroundColor: "rgb(255, 235, 205)" }}>
             <div className="row">
-                {
-                    isLoading ? <Spinner light={true} size={4}></Spinner>
-                        : (questions.length === 0 ? <></> :
-                            <>
-                                {!quizFinished ?
-                                    <div className="container">
-                                        <div className="row">
-                                            <div className="col-12">
-                                            <SquareButton destination="/Home" text="Stop"/>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12 text-center h2">{selectedCategory.name}</div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12 text-center h2">Question {activeQuestionIndex + 1}/{numberOfQuestions}</div>
-                                        </div>
-                                        <div className="row">
-                                            <Question question={questions[activeQuestionIndex].question} correct_answer={questions[activeQuestionIndex].correct_answer} incorrect_answers={questions[activeQuestionIndex].incorrect_answers} selectAnswerHandler={selectAnswerHandler}
-                                            ></Question>
-                                        </div>
-                                    </div> : <>
-                                        {/* Score/result component */}
-                                        <div className="container text-center">
-                                            <Result score={score} />
-                                        </div>
-                                    </>
-                                }
-                            </>)}
+                {isLoading ? <Spinner light={true} size={4}></Spinner>
+                    :(questions.length === 0 ? <></> : <>
+                    {!quizFinished ?
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-12">
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12 text-center h2">{selectedCategory.name}</div>
+                            </div>
+                            <div className="row">
+                                <div className="col-12 text-center h2">Question {activeQuestionIndex + 1}/{numberOfQuestions}</div>
+                            </div>
+                            <div className="row">
+                                <Question question={questions[activeQuestionIndex].question} correct_answer={questions[activeQuestionIndex].correct_answer} incorrect_answers={questions[activeQuestionIndex].incorrect_answers} selectAnswerHandler={selectAnswerHandler}
+                                ></Question>
+                            </div>
+                            </div> : 
+                        <>
+                            {/* Score/result component */}
+                            <div className="container text-center">
+                                <Result score={score} />
+                            </div>
+                        </>
+                    }
+                </>)}
             </div>
 
         </div>

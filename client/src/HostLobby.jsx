@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { SocketConext } from './data/socketContent'
+import { SocketContext } from './data/socketContent'
 import ScrollableList from './components/PlayerList';
 
 function HostLobby() {
-  const socket = useContext(SocketConext);
+  const socket = useContext(SocketContext);
   const navigate = useNavigate();
   const {code} = useParams();
 
   const [playerList, setPlayerList] = useState([]);
-  const [isReady, setIsReady] = useState(true);
+  const [isNotReady, setIsNotReady] = useState(true);
   const [readyMessage, setReadyMessage] = useState("Waiting for players to join...");
 
   useEffect(() => {
@@ -40,20 +40,23 @@ function HostLobby() {
         console.log(data)
   
         if(data.length > 0){
-          setIsReady(false)
+          setIsNotReady(false)
           setReadyMessage("Click 'Start game' to begin the quiz!")
         }
         else{
-          setIsReady(true)
+          setIsNotReady(true)
           setReadyMessage("Waiting for players to join...")
         }
       })
 
-      return () => {
-        socket.off('room-closed')
-        console.log("Dismounted");
-      }
-  },[]);
+      // return () => {
+      //   socket.off('room-joined')
+      //   socket.off('quiz-start')
+      //   socket.off('room-closed')
+      //   socket.off('update-players')
+      //   console.log("Dismounted");
+      // }
+  });
 
   function startQuiz(){
     socket.emit('start-quiz', code)
@@ -75,7 +78,7 @@ function HostLobby() {
           <h3 style={{ marginTop: '50px' }}>{readyMessage}</h3>
 
           <div className="row" style={{ margin: '20px' }}>
-            <button onClick={startQuiz} disabled={isReady} style={{marginInlineEnd: '20px'}}>Start Game</button>
+            <button onClick={startQuiz} disabled={isNotReady} style={{marginInlineEnd: '20px'}}>Start Game</button>
             <button onClick={closeRoom}>Close Room</button>
           </div>
 

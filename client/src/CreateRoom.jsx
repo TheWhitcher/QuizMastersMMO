@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { SocketConext } from './data/socketContent';
+import { useContext, useEffect, useState } from 'react'
+import { SocketContext } from './data/socketContent';
 import { useNavigate } from 'react-router-dom';
 
 function CreateRoom() {
-    const socket = useContext(SocketConext);
+    const socket = useContext(SocketContext);
     const navigate = useNavigate();
 
-    const [quizDifficulty, setDifficulty] = useState('Easy');
+    const [quizDifficulty, setDifficulty] = useState('easy');
     const [category, setCategory] = useState("31");
     const [numberOfQuestions, setNumberOfQuestion] = useState(1);
     const [timerPerQuestion, setTimePerQuestion] = useState(15);
@@ -23,7 +23,12 @@ function CreateRoom() {
         socket.on('room-code', roomCode => {            
             navigate(`../host-lobby/${roomCode}`);
         })
-    },[])
+
+        // return () => {
+            //     socket.off('room-code')
+            //     console.log("Dismounted");
+            // }
+    }, [])
 
     const handleDifficultyChange = (event) => {
         setDifficulty(event.target.value);
@@ -90,13 +95,13 @@ function CreateRoom() {
                 <div className="row" style={{ margin: '10px' }}>
                     <label>Difficulty: </label>
 
-                    <input type="radio" id="easy" value="Easy" checked={quizDifficulty === 'Easy'} onChange={handleDifficultyChange}/>
+                    <input type="radio" id="easy" value="easy" checked={quizDifficulty === 'easy'} onChange={handleDifficultyChange}/>
                     <label htmlFor="easy" style={{marginInlineEnd: '10px'}}>Easy</label>
 
-                    <input type="radio" id="medium" value="Medium" checked={quizDifficulty === 'Medium'} onChange={handleDifficultyChange}/>
+                    <input type="radio" id="medium" value="medium" checked={quizDifficulty === 'medium'} onChange={handleDifficultyChange}/>
                     <label htmlFor="medium" style={{marginInlineEnd: '10px'}}>Medium</label>
 
-                    <input type="radio" id="hard" value="Hard" checked={quizDifficulty === 'Hard'} onChange={handleDifficultyChange}/>
+                    <input type="radio" id="hard" value="hard" checked={quizDifficulty === 'hard'} onChange={handleDifficultyChange}/>
                     <label htmlFor="hard" style={{marginInlineEnd: '10px'}}>Hard</label>
                 </div>
 

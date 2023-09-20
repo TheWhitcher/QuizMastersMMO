@@ -1,70 +1,82 @@
-import React, { useEffect, useState } from 'react'
-import { openTDhost } from './constants';
+import { useContext, useEffect, useState } from 'react'
 import Question from './components/Question';
 import Spinner from './components/Spinner';
 import Result from './components/Result';
-
+import { SocketContext } from './data/socketContent';
+import { useNavigate, useParams } from 'react-router-dom';
+import Timer from './components/Timer';
 
 function HostQuiz() {
+    const socket = useContext(SocketContext);
+    const navigate = useNavigate();
+    const {code} = useParams();
 
-    const JSONstring = localStorage.getItem("categoryInfo");
-    const categoryInfo = JSON.parse(JSONstring);
-    
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
     const [questions, setQuestions] = useState([]);
-    const [quizFinished, setQuizFinished] = useState(false);
-    const [score, setScore] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState();
-
-    const numberOfQuestions = 10;
+    const [numberOfQuestions, setNumberOfQuestion] = useState();
+    const [timePerQuestion, setTimePerQuestion] = useState();
+    const [playerCount, setPlayerCount] = useState(0);
+    const [playersAnswered, setPlayersAnswered] = useState(0);
+    const [isNotDone, setIsNotDone] = useState(true)
 
     useEffect(() => {
-        setSelectedCategory({name: categoryInfo[0].name, id: categoryInfo[1].id})
-    }, [])
-
-    useEffect(() => {
-        if (!selectedCategory) {
-            return
-        }
-
-        const url = `${openTDhost}?amount=${numberOfQuestions}&category=${selectedCategory.id}&difficulty=easy`
-
-        setIsLoading(true);
-
-        async function fetchTrivia() {
-
-            const triviaResponse = await fetch(url);
-
-            const body = await triviaResponse.json();
-
-            if (body.results) {
-                setQuestions(body.results);
+        if(!socket){
+                navigate('./multiplayer')
+                console.log("No socket found")
+                return;
             }
+    
+            socket.emit('connected');
+            socket.emit('request-questions', { code: code, isHost: true });
+            socket.emit('start-timer', {code: code});
+    
+            socket.on('quiz-questions', (data) => {
+                console.log('data: ', data);
+                setQuestions(data.questions)
+                setNumberOfQuestion(data.numberOfQuestions)
+                setTimePerQuestion(data.timePerQuestion)
+                setSelectedCategory(data.questions[0].category)
+                setPlayerCount(data.playerCount)  
+            })
 
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 500)
-        }
+            socket.on('room-closed', (data) => {
+                alert(data.message)
+                navigate("../choice")
+            })
 
-        fetchTrivia();
+            socket.on('player-answered', () => {
+                setPlayersAnswered(playersAnswered + 1)
 
-    }, [selectedCategory])
+                if(playersAnswered === playerCount){
+                    setIsNotDone(false)
+                }
+            })
 
-    function selectAnswerHandler(answer) {
+            socket.on('time-up', () => {
+                setIsNotDone(false)
+            })
+
+            // return () => {
+            //     socket.off('room-closed')
+            //     socket.off('quiz-questions')
+            //     console.log("Dismounted");
+            // }
+    }, []);
+
+    function nextQuestion() {
         setIsLoading(true);
-
-        if (answer.correct) {
-            setScore((value) => value + 1); // increment score
-            alert("Good Answer!");
-        }
 
         if (activeQuestionIndex === numberOfQuestions - 1) {
             // last question
-            setQuizFinished(true);
+            navigate(`../leaderboard/${code}`)
         } else {
             // next question
             setActiveQuestionIndex((value) => value + 1);
+            setIsNotDone(true)
+            socket.emit('start-timer', {code: code})
+
         }
 
         setTimeout(() => {
@@ -72,37 +84,42 @@ function HostQuiz() {
         }, 200)
     }
 
+    function closeRoom(){
+        socket.emit('close-room', code)
+      }
+
     return (
-        <div className='container rounded p-4 my-2' style={{ backgroundColor: "rgb(255, 235, 205)" }}>
+        <div className='container' style={{ margin: '10px', padding: '40px' }}>
             <div className="row">
-                {
-                    isLoading ? <Spinner light={true} size={4}></Spinner>
-                        : (questions.length === 0 ? <></> :
-                            <>
-                                {!quizFinished ?
-                                    <div className="container">
-                                        <div className="row">
-                                            <div className="col-12">
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12 text-center h2">{selectedCategory.name}</div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-12 text-center h2">Question {activeQuestionIndex + 1}/{numberOfQuestions}</div>
-                                        </div>
-                                        <div className="row">
-                                            <Question question={questions[activeQuestionIndex].question} correct_answer={questions[activeQuestionIndex].correct_answer} incorrect_answers={questions[activeQuestionIndex].incorrect_answers} selectAnswerHandler={selectAnswerHandler}
-                                            ></Question>
-                                        </div>
-                                    </div> : <>
-                                        {/* Score/result component */}
-                                        <div className="container text-center">
-                                            <Result score={score} />
-                                        </div>
-                                    </>
-                                }
-                            </>)}
+                { 
+                    isLoading ? <Spinner light={true} size={4}></Spinner> : 
+                    (questions.length === 0 ? <></> :
+                        <>
+                            <div className="container">
+                                <div className="row">
+                                    <div>{selectedCategory}</div>
+                                </div>
+                                <div className="row">
+                                    <div>Question {activeQuestionIndex + 1}/{numberOfQuestions}</div>
+                                </div>
+                                <div className="row">
+                                    <div>Answers {playersAnswered}/{playerCount}</div>
+                                </div>
+                                <div className="row" style={{marginBlock: '10px'}}>
+                                    <button style={{marginInline: '30px'}} onClick={nextQuestion} disabled={isNotDone}>Next</button>
+                                    <button style={{marginInline: '30px'}} onClick={closeRoom}>Close</button>
+                                </div>
+                                    
+                                <div className='row' style={{fontSize: '1.5em'}}>Time Left <Timer initialTime={timePerQuestion} /></div>
+                                <div style={{pointerEvents: 'none'}}>
+                                    <Question question={questions[activeQuestionIndex].question} correct_answer={questions[activeQuestionIndex].correct_answer} incorrect_answers={questions[activeQuestionIndex].incorrect_answers}
+                                    ></Question>
+                                </div>
+                            </div>
+
+                        </>
+                    )
+                }
             </div>
 
         </div>
