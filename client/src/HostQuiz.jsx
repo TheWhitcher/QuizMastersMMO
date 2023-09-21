@@ -19,47 +19,50 @@ function HostQuiz() {
     const [playerCount, setPlayerCount] = useState(0);
     const [playersAnswered, setPlayersAnswered] = useState(0);
     const [isNotDone, setIsNotDone] = useState(true)
-
+    
     useEffect(() => {
         if(!socket){
-                navigate('./multiplayer')
-                return;
-            }
-    
-            socket.emit('connected');
-            socket.emit('request-questions', { code: code, isHost: true });
-            socket.emit('start-timer', {code: code});
-    
-            socket.on('quiz-questions', (data) => {
+            navigate('./multiplayer')
+            return;
+        }
+        
+        socket.emit('connected');
+        socket.emit('request-questions', { code: code, isHost: true });
+        socket.emit('start-timer', {code: code});
+        
+        socket.on('quiz-questions', (data) => {
                 setQuestions(data.questions)
                 setNumberOfQuestion(data.numberOfQuestions)
                 setTimePerQuestion(data.timePerQuestion)
                 setSelectedCategory(data.questions[0].category)
                 setPlayerCount(data.playerCount)  
-                
             })
 
-            socket.on('room-closed', () => {
+        socket.on('room-closed', () => {
                 navigate("../choice")
             })
 
-            socket.on('update-answered', () => {
-                setPlayersAnswered(playersAnswered + 1)
-                if(playersAnswered === playerCount){
-                    setIsNotDone(false)
-                }
-            })
+        socket.on('update-answered', () => {
+            const answered = playersAnswered + 1
+            setPlayersAnswered(answered)
+            console.log('answered: ', answered);
+            console.log('playerCount: ', playerCount);
 
-            socket.on('time-up', () => {
+            if(playersAnswered === playerCount){
                 setIsNotDone(false)
-            })
-
-            return () => {
-                socket.off('quiz-questions')
-                socket.off('room-closed')
-                socket.off('update-answered')
-                socket.off('times-up')
             }
+        })
+
+        socket.on('time-up', () => {
+            setIsNotDone(false)
+        })
+
+        return () => {
+            socket.off('quiz-questions')
+            socket.off('room-closed')
+            socket.off('update-answered')
+            socket.off('times-up')
+        }
     }, []);
 
     function nextQuestion() {

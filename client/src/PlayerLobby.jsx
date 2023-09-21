@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useContext } from 'react'
 import { SocketContext } from './data/socketContent';
 import ScrollableList from './components/PlayerList';

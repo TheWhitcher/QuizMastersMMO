@@ -26,6 +26,8 @@ let questions = [];
 let roomSettings = [];
 let playerList = [];
 let isStarted = false
+let interval
+
 const API_URL = "https://opentdb.com/api.php"
 
 io.on('connection', (socket) => {
@@ -129,7 +131,7 @@ io.on('connection', (socket) => {
                     questions: settings.questions,
                     numberOfQuestions: settings.numberOfQuestions,
                     timePerQuestion: settings.timePerQuestion,
-                    playerCount: playerList.length
+                    playerCount: settings.playerList.length
                 })
                 return;
             }
@@ -146,6 +148,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('start-timer', (data) => {
+        clearInterval(interval)
         for (const settings of roomSettings) {
             if (settings.code === data.code) {
                 countdown(settings.timePerQuestion, data.code)
@@ -200,10 +203,10 @@ io.on('connection', (socket) => {
 });
 
 function countdown(timeLeft, code) {
-    const interval = setInterval(() => {
+    interval = setInterval(() => {
       if (timeLeft <= 0) {
         clearInterval(interval);
-        io.to(code).emit('time-up'); // Emit signal to clients in the room when time runs out
+        io.to(code).emit('time-up');
       } else {
         timeLeft--;
       }
