@@ -26,7 +26,7 @@ function Leaderboard() {
             });
 
             socket.on('player-list', (data) => {
-              // TODO: add logic to sort the list from highest/lowest player scores
+              data.sort((a, b) => b.score - a.score);
               setPlayerList(data);
             });
 
