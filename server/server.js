@@ -183,7 +183,20 @@ io.on('connection', (socket) => {
                 return;
             }
         } 
-    }) 
+    })
+
+    socket.on('score-increase', (data) => {
+        for (const settings of roomSettings) {
+            if (settings.code === data.code) {
+                const index = settings.playerList.findIndex((player) => player.id === data.id);
+
+                if (index !== -1) {
+                    settings.playerList[index].score++;
+                }
+                return;
+            }
+        }
+    })
 });
 
 function countdown(timeLeft, code) {

@@ -72,11 +72,8 @@ function PlayerQuiz() {
         socket.emit('player-answered', {code: code})
 
         if (answer.correct) {
-            // TODO: increment score
-            //setScore((value) => value + 1); // increment score
+            socket.emit('score-increase', {code: code, id: socket.id})
         }
-
-        
     }
 
     return (

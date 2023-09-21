@@ -43,12 +43,10 @@ function Leaderboard() {
 
     function goHome(){
       if (socket.id === hostId){
-        console.log('host closed room')
         socket.emit('close-room', {code: code})
       }
       else {
         socket.emit('leave-room', {code: code, id: socket.id});
-
         navigate('../choice')
       }
     }
