@@ -18,7 +18,6 @@ function ClientLobby() {
   useEffect(() => {
     if(!socket){
       navigate('./multiplayer')
-      console.log("No socket found")
       return;
     }
 
@@ -26,8 +25,10 @@ function ClientLobby() {
 
     socket.on('room-closed', (data) => {
       socket.emit('leave-room', data.code)
+      setPlayerList([])
+      setIsInRoom(false);
+      setLeaveButton('Return')
       setMessage("Enter the code and your name to join a room!");
-      //alert(data.message);
     });
 
     socket.on('room-joined', (data) => {
@@ -37,13 +38,11 @@ function ClientLobby() {
     })
 
     socket.on('quiz-start', (data) => {
-      //alert(data.message);
       navigate(`../player-quiz/${data.code}`)
     });
 
     socket.on('update-players', (data) => {
       setPlayerList(data)
-      console.log(data)
     })
 
     return () => {
@@ -51,7 +50,6 @@ function ClientLobby() {
       socket.off('room-joined')
       socket.off('quiz-start')
       socket.off('update-players')
-      console.log("Dismounted Player Lobby");
     }
   },[])
 
@@ -62,7 +60,6 @@ function ClientLobby() {
   function joinRoom() {
       // Get the room code and player name from the input fields
       let playerName = document.getElementById("PlayerName").value;
-      console.log('playerName: ', playerName);
       
       if (!roomCode || !playerName) {
         //alert("Please enter both the Room Code and Player Name.");
@@ -72,7 +69,9 @@ function ClientLobby() {
       const playerInfo = {
       code: roomCode,
       name: playerName,
-      score: 0
+      id: socket.id,
+      score: 0,
+      isHost: false
     }
     
     socket.emit('join-room', playerInfo)

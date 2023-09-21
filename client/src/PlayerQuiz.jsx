@@ -16,12 +16,10 @@ function PlayerQuiz() {
     const [selectedCategory, setSelectedCategory] = useState();
     const [numberOfQuestions, setNumberOfQuestion] = useState();
     const [timePerQuestion, setTimePerQuestion] = useState();
-    const [isAnswered, setIsAnswered] = useState(false)
 
     useEffect(() => {
         if(!socket){
                 navigate('./multiplayer')
-                console.log("No socket found")
                 return;
             }
     
@@ -34,9 +32,6 @@ function PlayerQuiz() {
                 setNumberOfQuestion(data.numberOfQuestions)
                 setTimePerQuestion(data.timePerQuestion)
                 setSelectedCategory(data.questions[0].category)
-                console.log('activeQuestionIndex: ', activeQuestionIndex);
-                
-                console.log(data)
             })
 
             socket.on('next-question', () => {
@@ -65,7 +60,6 @@ function PlayerQuiz() {
                 socket.off('room-closed')
                 socket.off('time-up')
                 socket.off('time-nav-leaderboard')
-                console.log("Dismounted Host Lobby");
             }
     }, []);
 
@@ -80,7 +74,6 @@ function PlayerQuiz() {
         if (answer.correct) {
             // TODO: increment score
             //setScore((value) => value + 1); // increment score
-            //alert("Good Answer!");
         }
 
         

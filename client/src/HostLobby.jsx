@@ -15,25 +15,22 @@ function HostLobby() {
   useEffect(() => {
       if(!socket){
         navigate('./multiplayer')
-        console.log("No socket found")
         return;
       }
 
       socket.emit('connected', "Success")
-      socket.emit('join-room', {code: code, isHost: true})
+      socket.emit('join-room', {code: code, isHost: true, id: socket.id})
   
       socket.on('quiz-start', () => {
         navigate(`../host-quiz/${code}`)
       })
   
-      socket.on('room-closed', (data) => {
-        //alert(data.message)
+      socket.on('room-closed', () => {
         navigate("../choice")
       })
   
       socket.on('update-players', (data) => {
         setPlayerList(data)
-        console.log(data)
   
         if(data.length > 0){
           setIsNotReady(false)
@@ -49,7 +46,6 @@ function HostLobby() {
         socket.off('room-joined')
         socket.off('quiz-start')
         socket.off('update-players')
-        console.log("Dismounted Host Lobby");
       }
   });
 

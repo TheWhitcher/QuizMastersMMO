@@ -23,7 +23,6 @@ function HostQuiz() {
     useEffect(() => {
         if(!socket){
                 navigate('./multiplayer')
-                console.log("No socket found")
                 return;
             }
     
@@ -40,14 +39,12 @@ function HostQuiz() {
                 
             })
 
-            socket.on('room-closed', (data) => {
-                //alert(data.message)
+            socket.on('room-closed', () => {
                 navigate("../choice")
             })
 
             socket.on('update-answered', () => {
                 setPlayersAnswered(playersAnswered + 1)
-                console.log(playersAnswered)
                 if(playersAnswered === playerCount){
                     setIsNotDone(false)
                 }
@@ -62,7 +59,6 @@ function HostQuiz() {
                 socket.off('room-closed')
                 socket.off('update-answered')
                 socket.off('times-up')
-                console.log("Dismounted Host Quiz");
             }
     }, []);
 

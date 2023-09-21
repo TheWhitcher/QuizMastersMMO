@@ -25,7 +25,6 @@ server.listen(PORT, () => {
 let questions = [];
 let roomSettings = [];
 let playerList = [];
-let playerIndex = 0;
 let isStarted = false
 const API_URL = "https://opentdb.com/api.php"
 
@@ -42,19 +41,18 @@ io.on('connection', (socket) => {
             
             const settings = {
                 code: shortid.generate(),
+                hostID: "",
                 isStarted: isStarted,
                 category: data.category,
                 difficulty: data.difficulty,
                 numberOfQuestions: data.numberOfQuestions,
                 timePerQuestion: data.timePerQuestion,
                 playerList: playerList,
-                playerIndex: playerIndex,
                 questions: questions
             }
             
             roomSettings.push(settings)
             socket.emit('room-code', settings.code)
-            console.log(roomSettings)
 
         })
     });
@@ -66,15 +64,16 @@ io.on('connection', (socket) => {
                 io.to(data.code).emit('room-joined', `Joined room ${data.code}. Waiting for host to start the quiz!`)
                 
                 if (!data.isHost){
-                    console.log('player joined')
-                    settings.playerIndex++
                     const player = { 
-                        index: settings.playerIndex, 
+                        id: data.id, 
                         name: data.name,
                         score: data.score
                     };
                     settings.playerList.push(player)
                     io.to(data.code).emit('update-players', playerList)
+                }
+                else if (data.isHost){
+                    settings.hostID = data.id
                 }
                 return;
             }

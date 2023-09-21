@@ -13,15 +13,13 @@ function Leaderboard() {
     useEffect(() => {
         if(!socket){
                 navigate('./multiplayer')
-                console.log("No socket found")
                 return;
             }
     
             socket.emit('connected');
             socket.emit('request-players', {code: code});
 
-            socket.on('room-closed', (data) => {
-                //alert(data.message)
+            socket.on('room-closed', () => {
                 navigate("../choice")
             });
 
@@ -33,7 +31,6 @@ function Leaderboard() {
             return () => {
                 socket.off('room-closed')
                 socket.off('player-list')
-                console.log("Dismounted Leaderboard");
             }
     }, []);
 

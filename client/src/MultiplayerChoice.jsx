@@ -15,7 +15,6 @@ function MultiplayerChoice() {
         }
         else{
             navigate('./multiplayer')
-            console.log("No socket found")
         }
     },[])
 

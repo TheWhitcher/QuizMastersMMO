@@ -14,7 +14,6 @@ function CreateRoom() {
     useEffect(() => {
         if(!socket){
             navigate('./multiplayer')
-            console.log("No socket found")
             return;
         }
 
@@ -26,7 +25,6 @@ function CreateRoom() {
 
         return () => {
             socket.off('room-code')
-            console.log("Dismounted Create Room");
         }
     }, [])
 
@@ -35,7 +33,6 @@ function CreateRoom() {
     };
 
     const handleCategoryChange = (event) => {
-        console.log(event.target.value)
         setCategory(event.target.value);
     }
 

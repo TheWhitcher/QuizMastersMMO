@@ -12,7 +12,6 @@ function Multiplayer() {
     useEffect(() => {
         // On Load
         socket.current = io(SERVER_HOST);
-        console.log("Connected to WS server.");
         navigate('choice');
     }, []);
 
