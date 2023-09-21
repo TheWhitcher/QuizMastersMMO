@@ -9,34 +9,48 @@ function Leaderboard() {
     const {code} = useParams();
 
     const [playerList, setPlayerList] = useState([])
+    const [hostId, setHostId] = useState("");
 
     useEffect(() => {
         if(!socket){
-                navigate('./multiplayer')
-                return;
+              navigate('./multiplayer')
+              return;
             }
     
             socket.emit('connected');
             socket.emit('request-players', {code: code});
+            socket.emit('request-hostId', {code: code});
 
             socket.on('room-closed', () => {
-                navigate("../choice")
+              navigate("../choice")
             });
 
-            socket.on('player-list', (data => {
-                // TODO: add logic to sort the list from highest/lowest player scores
-                setPlayerList(data);
-            }));
+            socket.on('player-list', (data) => {
+              // TODO: add logic to sort the list from highest/lowest player scores
+              setPlayerList(data);
+            });
+
+            socket.on('host-id', (data) => {
+              setHostId(data);
+            })
 
             return () => {
-                socket.off('room-closed')
-                socket.off('player-list')
+              socket.off('room-closed')
+              socket.off('player-list')
+              socket.off('host-id')
             }
     }, []);
 
     function goHome(){
-        // TODO: add logic to close the room is host leaves, or leaves room if player leaves
+      if (socket.id === hostId){
+        console.log('host closed room')
+        socket.emit('close-room', {code: code})
+      }
+      else {
+        socket.emit('leave-room', {code: code, id: socket.id});
+
         navigate('../choice')
+      }
     }
 
   return (
@@ -48,7 +62,7 @@ function Leaderboard() {
           
             <div>
               {playerList.map((player, index) => {
-                return <Row key={index} index={player.index} name={player.name} score={player.score}/>
+                return <Row key={index} index={index + 1} name={player.name} score={player.score}/>
               })}
             </div>
           </div>

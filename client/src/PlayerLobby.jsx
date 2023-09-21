@@ -23,8 +23,8 @@ function ClientLobby() {
 
     socket.emit('connected', "Success")
 
-    socket.on('room-closed', (data) => {
-      socket.emit('leave-room', data.code)
+    socket.on('room-closed', () => {
+      socket.emit('leave-room', {code: roomCode, id: socket.id});
       setPlayerList([])
       setIsInRoom(false);
       setLeaveButton('Return')
@@ -75,19 +75,13 @@ function ClientLobby() {
     }
     
     socket.emit('join-room', playerInfo)
-    
-    //Handle connection errors
-    socket.onerror = function (error) {
-      console.error("WebSocket Error: ", error);
-      //alert("Failed to connect to the room. Please check the room code and try again.");
-    };
   }
   
   function leaveRoom() {
     
     if (isInRoom){
       //Close the socket connection
-      socket.emit('leave-room', {code: roomCode});
+      socket.emit('leave-room', {code: roomCode, id: socket.id});
       setMessage("Enter the code and your name to join a room!");
       setPlayerList([]);
       setIsInRoom(false);

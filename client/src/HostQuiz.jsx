@@ -84,7 +84,7 @@ function HostQuiz() {
     }
 
     function closeRoom(){
-        socket.emit('close-room', code)
+        socket.emit('close-room', {code: code})
       }
 
     return (

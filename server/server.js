@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
             
             const settings = {
                 code: shortid.generate(),
-                hostID: "",
+                hostId: "",
                 isStarted: isStarted,
                 category: data.category,
                 difficulty: data.difficulty,
@@ -70,10 +70,10 @@ io.on('connection', (socket) => {
                         score: data.score
                     };
                     settings.playerList.push(player)
-                    io.to(data.code).emit('update-players', playerList)
+                    io.to(data.code).emit('update-players', settings.playerList)
                 }
                 else if (data.isHost){
-                    settings.hostID = data.id
+                    settings.hostId = data.id
                 }
                 return;
             }
@@ -82,32 +82,40 @@ io.on('connection', (socket) => {
         socket.emit('room-joined', 'Failed to join room')
     });
 
-    socket.on('close-room', (code) => {
-        io.to(code).emit('room-closed', {
-            message: "Room closed by Host",
-            code: code
-        })
+    socket.on('close-room', (data) => {
+        io.to(data.code).emit('room-closed')
         
-        socket.leave(code)
+        const index = roomSettings.findIndex((settings) => settings.code === data.code);
+
+        if (index !== -1) {
+            roomSettings.splice(index, 1);
+        }
+    
+        socket.leave(data.code);
+    });
+
+    socket.on('leave-room', (data) => {
         for (const settings of roomSettings) {
-            if (settings.code === code) {
-                roomSettings.splice(settings)
+            if (settings.code === data.code) {
+                const index = settings.playerList.findIndex((player) => player.id === data.id);
+
+                if (index !== -1) {
+                    settings.playerList.splice(index, 1);
+                    io.to(data.code).emit('update-players', settings.playerList);
+                    socket.leave(data.code)
+                }
                 return;
             }
         }
     });
 
-    socket.on('leave-room', (code) => {
-        socket.leave(code)
-    });
-
-    socket.on('start-quiz', (code) => {
+    socket.on('start-quiz', (data) => {
         for (const settings of roomSettings) {
-            if (settings.code === code) {
+            if (settings.code === data.code) {
                 settings.isStarted = true
-                io.to(code).emit('quiz-start', {
+                io.to(data.code).emit('quiz-start', {
                     message: "Quiz started by Host",
-                    code: code
+                    code: data.code
                 })
             }
             return;
@@ -167,6 +175,15 @@ io.on('connection', (socket) => {
             }
         }  
     })
+
+    socket.on('request-hostId', (data) => {
+        for (const settings of roomSettings) {
+            if (settings.code === data.code) {
+                io.to(data.code).emit('host-id', settings.hostId)
+                return;
+            }
+        } 
+    }) 
 });
 
 function countdown(timeLeft, code) {

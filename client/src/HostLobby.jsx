@@ -21,8 +21,8 @@ function HostLobby() {
       socket.emit('connected', "Success")
       socket.emit('join-room', {code: code, isHost: true, id: socket.id})
   
-      socket.on('quiz-start', () => {
-        navigate(`../host-quiz/${code}`)
+      socket.on('quiz-start', (data) => {
+        navigate(`../host-quiz/${data.code}`)
       })
   
       socket.on('room-closed', () => {
@@ -50,11 +50,11 @@ function HostLobby() {
   });
 
   function startQuiz(){
-    socket.emit('start-quiz', code)
+    socket.emit('start-quiz', {code: code})
   }
 
   function closeRoom(){
-    socket.emit('close-room', code)
+    socket.emit('close-room', {code: code})
   }
 
   return (

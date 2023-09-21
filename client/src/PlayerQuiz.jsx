@@ -41,8 +41,7 @@ function PlayerQuiz() {
                 socket.emit('start-timer', {code: code})
             })
 
-            socket.on('room-closed', (data) => {
-                //(data.message)
+            socket.on('room-closed', () => {
                 navigate("../choice")
             })
 
@@ -64,7 +63,8 @@ function PlayerQuiz() {
     }, []);
 
     function leaveRoom(){
-        socket.emit('leave-room', code)
+        socket.emit('leave-room', {code: code, id: socket.id});
+
     }
 
     function selectAnswerHandler(answer) {
