@@ -35,7 +35,7 @@ function HostQuiz() {
                 setNumberOfQuestion(data.numberOfQuestions)
                 setTimePerQuestion(data.timePerQuestion)
                 setSelectedCategory(data.questions[0].category)
-                setPlayerCount(data.playerCount)  
+                setPlayerCount(data.playerCount)
             })
 
         socket.on('room-closed', () => {
@@ -44,13 +44,11 @@ function HostQuiz() {
 
         socket.on('update-answered', () => {
             const answered = playersAnswered + 1
-            setPlayersAnswered(answered)
-            console.log('answered: ', answered);
-            console.log('playerCount: ', playerCount);
-
-            if(playersAnswered === playerCount){
+            
+            if(answered === playerCount){
                 setIsNotDone(false)
             }
+            setPlayersAnswered(answered)
         })
 
         socket.on('time-up', () => {
@@ -63,7 +61,7 @@ function HostQuiz() {
             socket.off('update-answered')
             socket.off('times-up')
         }
-    }, []);
+    }, [playerCount, playersAnswered]);
 
     function nextQuestion() {
         setIsLoading(true);
